@@ -1,0 +1,10 @@
+# node_modules folders
+/server/node_modules
+/client/node_modules
+
+# Environment variables
+/server/.env
+/client/.env
+
+# Build folder
+/client/build
