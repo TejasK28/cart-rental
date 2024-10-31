@@ -58,3 +58,10 @@
 .review-form button:hover {
     background-color: #0056b3;
 }
+
+.error-message {
+    color: #d9534f;
+    /* Red color to indicate error */
+    margin-top: 8px;
+    font-size: 14px;
+}

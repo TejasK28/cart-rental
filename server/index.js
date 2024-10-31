@@ -80,22 +80,24 @@ app.get('/api/unavailable-dates', async (req, res) => {
 const Review = require('./models/Review'); // Include the Review model
 
 app.post('/api/reviews', async (req, res) => {
-  const { name, reviewText, rating } = req.body;
-
-  if (!name || !reviewText || !rating) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
   try {
+    const { name, reviewText, rating } = req.body;
+
+    // Check if the user has made a booking
+    const bookingExists = await Booking.findOne({ name });
+
+    if (!bookingExists) {
+      return res.status(403).json({ message: 'Only customers with bookings can submit reviews.' });
+    }
+
     const newReview = new Review({ name, reviewText, rating });
     await newReview.save();
     res.status(201).json({ message: 'Review submitted successfully' });
   } catch (error) {
-    console.error("Review submission error:", error);
-    res.status(500).json({ message: 'Review submission failed' });
+    console.error("Error submitting review:", error);
+    res.status(500).json({ message: 'Error submitting review' });
   }
 });
-
 
 // Endpoint to fetch top reviews
 app.get('/api/reviews/top', async (req, res) => {
