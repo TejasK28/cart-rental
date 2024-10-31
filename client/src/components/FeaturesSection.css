@@ -1,0 +1,17 @@
+/* /client/src/components/FeaturesSection.css */
+.features-section {
+    padding: 60px 20px;
+    background-color: #f9e4ad;
+    text-align: center;
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+}
+
+.features-list li {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: #333;
+}

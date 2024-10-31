@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+// /client/src/App.js
+import React from 'react';
+import { useEffect, useState } from 'react';
+import HeroSection from './components/HeroSection.js';
+import FeaturesSection from './components/FeaturesSection.js';
+import RatingsSection from './components/RatingsSection.js';
 import './App.css';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 function App() {
-  const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/product")
-      .then(res => setProduct(res.data))
-      .catch(err => console.error(err));
+    AOS.init({ duration: 1000 });
   }, []);
 
   return (
     <div className="App">
-      {product ? (
-        <div>
-          <img src={product.imageURL} alt={product.name} />
-          <p>{product.description}</p>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+      <HeroSection />
+      <FeaturesSection />
+      <RatingsSection />
     </div>
   );
 }

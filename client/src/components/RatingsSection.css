@@ -1,0 +1,17 @@
+/* /client/src/components/RatingsSection.css */
+.ratings-section {
+    padding: 60px 20px;
+    text-align: center;
+    background-color: #fff5ee;
+}
+
+.rating-stars span {
+    font-size: 2rem;
+    color: #ff6347;
+}
+
+.rating-stars p {
+    margin: 10px 0;
+    font-style: italic;
+    color: #555;
+}
