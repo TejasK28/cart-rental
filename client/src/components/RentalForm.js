@@ -8,11 +8,12 @@ function RentalForm() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phoneNumber: '', // Add phone number to form data
     street: '',
     city: '',
     state: '',
     zip: '',
-    dropoffLocation: '' // New dropoff location field
+    dropoffLocation: ''
   });
   const [message, setMessage] = useState('');
   const [dateOptions, setDateOptions] = useState([]);
@@ -72,37 +73,33 @@ function RentalForm() {
     [e.target.name]: e.target.value
   });
 
-const handleSubmit = async () => {
-  const { startDate, endDate, startTime, endTime } = dates;
+  const handleSubmit = async () => {
+    const { startDate, endDate, startTime, endTime } = dates;
 
-  // Log formData to verify `dropoffLocation`
-  console.log("Form data being submitted:", formData);
+    if (!startDate || !endDate || !startTime || !endTime) {
+      setMessage("Please select both start and end dates and times.");
+      return;
+    }
 
-  if (!startDate || !endDate || !startTime || !endTime) {
-    setMessage("Please select both start and end dates and times.");
-    return;
-  }
+    if (new Date(`${endDate}T${convertTo24HourFormat(endTime)}`) <= new Date(`${startDate}T${convertTo24HourFormat(startTime)}`)) {
+      setMessage("End date and time must be after the start date and time.");
+      return;
+    }
 
-  if (new Date(`${endDate}T${convertTo24HourFormat(endTime)}`) <= new Date(`${startDate}T${convertTo24HourFormat(startTime)}`)) {
-    setMessage("End date and time must be after the start date and time.");
-    return;
-  }
+    try {
+      const formattedStartDate = new Date(`${startDate}T${convertTo24HourFormat(startTime)}:00`).toISOString();
+      const formattedEndDate = new Date(`${endDate}T${convertTo24HourFormat(endTime)}:00`).toISOString();
 
-  try {
-    const formattedStartDate = new Date(`${startDate}T${convertTo24HourFormat(startTime)}:00`).toISOString();
-    const formattedEndDate = new Date(`${endDate}T${convertTo24HourFormat(endTime)}:00`).toISOString();
-
-    const response = await axios.post('http://localhost:5001/api/rent', {
-      ...formData, // Includes `dropoffLocation`
-      startDate: formattedStartDate,
-      endDate: formattedEndDate
-    });
-    setMessage(response.data.message);
-  } catch (error) {
-    setMessage(error.response ? error.response.data.message : 'Error submitting form');
-  }
-};
-
+      const response = await axios.post('http://localhost:5001/api/rent', {
+        ...formData,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate
+      });
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(error.response ? error.response.data.message : 'Error submitting form');
+    }
+  };
 
   const filteredDateOptions = dateOptions.filter((date) => new Date(date) > unavailableDate);
   const filteredTimeOptions = dates.startDate === unavailableDate?.toISOString().split('T')[0]
@@ -193,6 +190,14 @@ const handleSubmit = async () => {
       />
       <input
         type="text"
+        name="phoneNumber"
+        placeholder="Phone Number" // New phone number field
+        value={formData.phoneNumber}
+        onChange={handleInputChange}
+        required
+      />
+      <input
+        type="text"
         name="street"
         placeholder="Street Address"
         value={formData.street}
@@ -223,15 +228,14 @@ const handleSubmit = async () => {
         onChange={handleInputChange}
         required
       />
-     <input
-      type="text"
-      name="dropoffLocation" // Ensure this name matches the formData property
-      placeholder="Dropoff Location"
-      value={formData.dropoffLocation}
-      onChange={handleInputChange}
-      required
-    />
-
+      <input
+        type="text"
+        name="dropoffLocation" // Dropoff location field
+        placeholder="Dropoff Location"
+        value={formData.dropoffLocation}
+        onChange={handleInputChange}
+        required
+      />
       <button onClick={handleSubmit}>Confirm Booking</button>
       {message && <p>{message}</p>}
     </div>

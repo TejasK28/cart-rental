@@ -9,25 +9,17 @@ const BookingSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  address: {
-    street: {
-      type: String,
-      required: true
-    },
-    city: {
-      type: String,
-      required: true
-    },
-    state: {
-      type: String,
-      required: true
-    },
-    zip: {
-      type: String,
-      required: true
-    }
+  phoneNumber: { // New phone number field
+    type: String,
+    required: true
   },
-  dropoffLocation: { // New dropoff location field
+  address: {
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zip: { type: String, required: true }
+  },
+  dropoffLocation: {
     type: String,
     required: true
   },
@@ -38,11 +30,6 @@ const BookingSchema = new mongoose.Schema({
   endDate: {
     type: Date,
     required: true
-  },
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: false 
   },
   createdAt: {
     type: Date,

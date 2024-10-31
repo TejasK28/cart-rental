@@ -11,29 +11,34 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
 
-const Booking = require('./models/Booking'); // Define this model with the required fields
+
+// BOOKING ----------------------------------------------------------------
+const Booking = require('./models/Booking'); // Ensure the Booking model is updated with phoneNumber and dropoffLocation
 
 app.post('/api/rent', async (req, res) => {
   try {
     const {
       name,
       email,
+      phoneNumber, // New field added for validation and saving
       street,
       city,
       state,
       zip,
-      dropoffLocation, // Ensure it matches client side naming
+      dropoffLocation,
       startDate,
       endDate
     } = req.body;
 
-    if (!name || !email || !street || !city || !state || !zip || !dropoffLocation || !startDate || !endDate) {
+    // Check that all required fields are provided
+    if (!name || !email || !phoneNumber || !street || !city || !state || !zip || !dropoffLocation || !startDate || !endDate) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     const newBooking = new Booking({
       name,
       email,
+      phoneNumber, // Save phone number along with other fields
       address: { street, city, state, zip },
       dropoffLocation,
       startDate,
@@ -48,7 +53,6 @@ app.post('/api/rent', async (req, res) => {
     res.status(500).json({ message: 'Booking creation failed' });
   }
 });
-
 
 // Endpoint to get the latest unavailable end date and time
 app.get('/api/unavailable-dates', async (req, res) => {
@@ -68,6 +72,39 @@ app.get('/api/unavailable-dates', async (req, res) => {
   } catch (error) {
     console.error("Error fetching unavailable dates:", error);
     res.status(500).json({ message: 'Server error, please try again' });
+  }
+});
+
+
+//REVIEW ------------------------------
+const Review = require('./models/Review'); // Include the Review model
+
+app.post('/api/reviews', async (req, res) => {
+  const { name, reviewText, rating } = req.body;
+
+  if (!name || !reviewText || !rating) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const newReview = new Review({ name, reviewText, rating });
+    await newReview.save();
+    res.status(201).json({ message: 'Review submitted successfully' });
+  } catch (error) {
+    console.error("Review submission error:", error);
+    res.status(500).json({ message: 'Review submission failed' });
+  }
+});
+
+
+// Endpoint to fetch top reviews
+app.get('/api/reviews/top', async (req, res) => {
+  try {
+    const topReviews = await Review.find().sort({ rating: -1, createdAt: -1 }).limit(5);
+    res.status(200).json(topReviews);
+  } catch (error) {
+    console.error("Error fetching top reviews:", error);
+    res.status(500).json({ message: 'Error fetching reviews' });
   }
 });
 
