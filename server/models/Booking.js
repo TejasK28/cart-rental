@@ -1,4 +1,3 @@
-// /server/models/Booking.js
 const mongoose = require('mongoose');
 
 const BookingSchema = new mongoose.Schema({
@@ -28,18 +27,22 @@ const BookingSchema = new mongoose.Schema({
       required: true
     }
   },
+  dropoffLocation: { // New dropoff location field
+    type: String,
+    required: true
+  },
   startDate: {
-    type: Date, // Stores both date and time
+    type: Date,
     required: true
   },
   endDate: {
-    type: Date, // Stores both date and time
+    type: Date,
     required: true
   },
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product', // Assuming you may link to a Product model
-    required: false // Optional, assuming only one product for now
+    ref: 'Product',
+    required: false 
   },
   createdAt: {
     type: Date,

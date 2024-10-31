@@ -11,7 +11,8 @@ function RentalForm() {
     street: '',
     city: '',
     state: '',
-    zip: ''
+    zip: '',
+    dropoffLocation: '' // New dropoff location field
   });
   const [message, setMessage] = useState('');
   const [dateOptions, setDateOptions] = useState([]);
@@ -29,7 +30,6 @@ function RentalForm() {
         const lastUnavailableDate = new Date(response.data.latestUnavailableDate); 
         setUnavailableDate(lastUnavailableDate);
 
-        // Generate date options for 60 days from the current date
         const options = [];
         const today = new Date();
         
@@ -72,35 +72,38 @@ function RentalForm() {
     [e.target.name]: e.target.value
   });
 
-  const handleSubmit = async () => {
-    const { startDate, endDate, startTime, endTime } = dates;
+const handleSubmit = async () => {
+  const { startDate, endDate, startTime, endTime } = dates;
 
-    if (!startDate || !endDate || !startTime || !endTime) {
-      setMessage("Please select both start and end dates and times.");
-      return;
-    }
+  // Log formData to verify `dropoffLocation`
+  console.log("Form data being submitted:", formData);
 
-    if (new Date(`${endDate}T${convertTo24HourFormat(endTime)}`) <= new Date(`${startDate}T${convertTo24HourFormat(startTime)}`)) {
-      setMessage("End date and time must be after the start date and time.");
-      return;
-    }
+  if (!startDate || !endDate || !startTime || !endTime) {
+    setMessage("Please select both start and end dates and times.");
+    return;
+  }
 
-    try {
-      const formattedStartDate = new Date(`${startDate}T${convertTo24HourFormat(startTime)}:00`).toISOString();
-      const formattedEndDate = new Date(`${endDate}T${convertTo24HourFormat(endTime)}:00`).toISOString();
+  if (new Date(`${endDate}T${convertTo24HourFormat(endTime)}`) <= new Date(`${startDate}T${convertTo24HourFormat(startTime)}`)) {
+    setMessage("End date and time must be after the start date and time.");
+    return;
+  }
 
-      const response = await axios.post('http://localhost:5001/api/rent', {
-        ...formData,
-        startDate: formattedStartDate,
-        endDate: formattedEndDate
-      });
-      setMessage(response.data.message);
-    } catch (error) {
-      setMessage(error.response ? error.response.data.message : 'Error submitting form');
-    }
-  };
+  try {
+    const formattedStartDate = new Date(`${startDate}T${convertTo24HourFormat(startTime)}:00`).toISOString();
+    const formattedEndDate = new Date(`${endDate}T${convertTo24HourFormat(endTime)}:00`).toISOString();
 
-  // Filtered date and time options for start date and start time
+    const response = await axios.post('http://localhost:5001/api/rent', {
+      ...formData, // Includes `dropoffLocation`
+      startDate: formattedStartDate,
+      endDate: formattedEndDate
+    });
+    setMessage(response.data.message);
+  } catch (error) {
+    setMessage(error.response ? error.response.data.message : 'Error submitting form');
+  }
+};
+
+
   const filteredDateOptions = dateOptions.filter((date) => new Date(date) > unavailableDate);
   const filteredTimeOptions = dates.startDate === unavailableDate?.toISOString().split('T')[0]
     ? timeOptions.filter((time) => {
@@ -220,6 +223,15 @@ function RentalForm() {
         onChange={handleInputChange}
         required
       />
+     <input
+      type="text"
+      name="dropoffLocation" // Ensure this name matches the formData property
+      placeholder="Dropoff Location"
+      value={formData.dropoffLocation}
+      onChange={handleInputChange}
+      required
+    />
+
       <button onClick={handleSubmit}>Confirm Booking</button>
       {message && <p>{message}</p>}
     </div>

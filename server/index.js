@@ -14,41 +14,38 @@ mongoose.connect(process.env.MONGO_URI)
 const Booking = require('./models/Booking'); // Define this model with the required fields
 
 app.post('/api/rent', async (req, res) => {
-  const { name, email, street, city, state, zip, startDate, endDate } = req.body;
-
-  // Basic validation to make sure required fields are not empty
-  if (!name || !email || !street || !city || !state || !zip || !startDate || !endDate) {
-    return res.status(400).json({ message: 'Please fill in all fields' });
-  }
-
   try {
-    // Check if the dates are available
-    const existingBooking = await Booking.findOne({
-      $or: [
-        { startDate: { $lte: endDate, $gte: startDate } },
-        { endDate: { $lte: endDate, $gte: startDate } }
-      ]
-    });
+    const {
+      name,
+      email,
+      street,
+      city,
+      state,
+      zip,
+      dropoffLocation, // Ensure it matches client side naming
+      startDate,
+      endDate
+    } = req.body;
 
-    if (existingBooking) {
-      return res.status(400).json({ message: 'Selected dates are unavailable' });
+    if (!name || !email || !street || !city || !state || !zip || !dropoffLocation || !startDate || !endDate) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Save booking if dates are available
-    const booking = new Booking({
+    const newBooking = new Booking({
       name,
       email,
       address: { street, city, state, zip },
+      dropoffLocation,
       startDate,
-      endDate
+      endDate,
+      createdAt: new Date()
     });
 
-    await booking.save();
-    res.status(200).json({ message: 'Booking confirmed' });
-
+    await newBooking.save();
+    res.status(201).json({ message: 'Booking created successfully' });
   } catch (error) {
-    console.error("Booking error:", error); // Log the exact error to console
-    res.status(500).json({ message: 'Server error, please try again' });
+    console.error("Booking error:", error);
+    res.status(500).json({ message: 'Booking creation failed' });
   }
 });
 
