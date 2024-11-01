@@ -72,8 +72,10 @@ function RentalForm() {
     if (dates.startDateTime && dates.endDateTime) {
       const start = new Date(dates.startDateTime);
       const end = new Date(dates.endDateTime);
-      const dayDifference = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-      setEstimatedCost(dayDifference * 100);
+      let dayDifference = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+      if(dayDifference === 0)
+        dayDifference++;
+      setEstimatedCost(Math.abs(dayDifference * 100));
     } else {
       setEstimatedCost(0);
     }
