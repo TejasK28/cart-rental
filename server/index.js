@@ -4,9 +4,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-//app.use(cors());
+app.use(cors());
 app.use(express.json());
-app.use(cors({ origin: ['https://cart-rental-gqqj.vercel.app/', 'http://localhost:5001'] }));
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
@@ -58,16 +57,18 @@ app.post('/api/rent', async (req, res) => {
 // Endpoint to get the latest unavailable end date and time
 app.get('/api/unavailable-dates', async (req, res) => {
   try {
-    // Find the latest end date in bookings
     const latestBooking = await Booking.findOne().sort({ endDate: -1 });
     if (latestBooking) {
+      const endDate = new Date(latestBooking.endDate);
       return res.status(200).json({
-        latestUnavailableDate: latestBooking.endDate,
+        latestUnavailableDate: endDate.toISOString().split('T')[0], // Date part only
+        latestUnavailableEndTime: endDate.toTimeString().split(' ')[0], // Time part only
       });
     } else {
-      // No bookings found, no unavailable dates
+      // No bookings found, return no unavailable dates
       return res.status(200).json({
         latestUnavailableDate: null,
+        latestUnavailableEndTime: null,
       });
     }
   } catch (error) {
@@ -75,6 +76,7 @@ app.get('/api/unavailable-dates', async (req, res) => {
     res.status(500).json({ message: 'Server error, please try again' });
   }
 });
+
 
 
 //REVIEW ------------------------------

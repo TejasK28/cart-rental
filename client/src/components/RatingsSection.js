@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './RatingsSection.css';
 import ReviewForm from './ReviewForm';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 function RatingsSection() {
   const [topReviews, setTopReviews] = useState([]);
@@ -10,7 +12,7 @@ function RatingsSection() {
   // Fetch top reviews function
   const fetchTopReviews = async () => {
     try {
-      const response = await axios.get('https://cart-rental-gqqj.vercel.app/api/reviews/top');
+      const response = await axios.get('http://localhost:5001/api/reviews/top');
       setTopReviews(response.data);
     } catch (error) {
       console.error("Error fetching top reviews:", error);
@@ -19,6 +21,9 @@ function RatingsSection() {
 
   useEffect(() => {
     fetchTopReviews();
+
+    // Initialize AOS
+    AOS.init({ duration: 1000, once: true });
   }, []);
 
   // Refresh reviews after a new review is submitted
@@ -27,18 +32,18 @@ function RatingsSection() {
   };
 
   return (
-    <div className="ratings-section">
-      <h2>Customer Ratings</h2>
-      <div className="rating-stars">
+    <div className="ratings-section" data-aos="fade-up">
+      <h2 data-aos="fade-down">Customer Ratings</h2>
+      <div className="rating-stars" data-aos="fade-up" data-aos-delay="200">
         {topReviews.map((review, index) => (
-          <div key={index} className="review">
+          <div key={index} className="review" data-aos="fade-up" data-aos-delay={index * 100}>
             <p><strong>{review.name}</strong></p>
             <p>{'⭐'.repeat(review.rating)}</p>
             <p>{review.reviewText}</p>
           </div>
         ))}
       </div>
-      <ReviewForm onReviewSubmitted={handleReviewSubmitted} />
+      <ReviewForm onReviewSubmitted={handleReviewSubmitted} data-aos="fade-up" data-aos-delay="300" />
     </div>
   );
 }

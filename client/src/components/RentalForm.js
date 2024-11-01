@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import emailjs from 'emailjs-com';
 import './RentalForm.css';
 
 function RentalForm() {
@@ -8,7 +9,7 @@ function RentalForm() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phoneNumber: '', // Add phone number to form data
+    phoneNumber: '',
     street: '',
     city: '',
     state: '',
@@ -18,22 +19,25 @@ function RentalForm() {
   const [message, setMessage] = useState('');
   const [dateOptions, setDateOptions] = useState([]);
   const [unavailableDate, setUnavailableDate] = useState(null);
-  const [timeOptions] = useState([
+  const [unavailableEndTime, setUnavailableEndTime] = useState(null);
+  const messageRef = useRef(null);
+
+  const timeOptions = [
     '06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
     '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM',
     '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'
-  ]);
+  ];
 
   useEffect(() => {
     const fetchUnavailableDates = async () => {
       try {
-        const response = await axios.get('https://cart-rental-gqqj.vercel.app/api/unavailable-dates');
-        const lastUnavailableDate = new Date(response.data.latestUnavailableDate); 
-        setUnavailableDate(lastUnavailableDate);
+        const response = await axios.get('http://localhost:5001/api/unavailable-dates');
+        setUnavailableDate(response.data.latestUnavailableDate);
+        setUnavailableEndTime(response.data.latestUnavailableEndTime);
 
         const options = [];
         const today = new Date();
-        
+
         for (let i = 0; i < 60; i++) {
           const futureDate = new Date(today);
           futureDate.setDate(today.getDate() + i);
@@ -49,23 +53,26 @@ function RentalForm() {
     fetchUnavailableDates();
   }, []);
 
+  useEffect(() => {
+    if (message && messageRef.current) {
+      messageRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [message]);
+
   const convertTo24HourFormat = (time12h) => {
     const [time, modifier] = time12h.split(' ');
     let [hours, minutes] = time.split(':');
-
-    if (hours === '12') {
-      hours = '00';
-    }
-    if (modifier === 'PM') {
-      hours = parseInt(hours, 10) + 12;
-    }
-
+    if (hours === '12') hours = '00';
+    if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
     return `${hours}:${minutes}`;
   };
 
   const handleDateChange = (e) => {
     const { name, value } = e.target;
     setDates((prevDates) => ({ ...prevDates, [name]: value }));
+    if (name === 'startDate' && value !== unavailableDate) {
+      setUnavailableEndTime(null);
+    }
   };
 
   const handleInputChange = (e) => setFormData({
@@ -75,7 +82,6 @@ function RentalForm() {
 
   const handleSubmit = async () => {
     const { startDate, endDate, startTime, endTime } = dates;
-
     if (!startDate || !endDate || !startTime || !endTime) {
       setMessage("Please select both start and end dates and times.");
       return;
@@ -90,7 +96,7 @@ function RentalForm() {
       const formattedStartDate = new Date(`${startDate}T${convertTo24HourFormat(startTime)}:00`).toISOString();
       const formattedEndDate = new Date(`${endDate}T${convertTo24HourFormat(endTime)}:00`).toISOString();
 
-      const response = await axios.post('https://cart-rental-gqqj.vercel.app/api/rent', {
+      const response = await axios.post('http://localhost:5001/api/rent', {
         ...formData,
         startDate: formattedStartDate,
         endDate: formattedEndDate
@@ -98,7 +104,26 @@ function RentalForm() {
 
       setMessage(response.data.message);
 
-      // Reset formData and dates to initial values
+      emailjs.send('service_tn4oh1k', 'template_r4qpagw', {
+        name: formData.name,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        street: formData.street,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        dropoffLocation: formData.dropoffLocation,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+      }, 'E3a2a-M3qNeDc3tUs')
+      .then((result) => {
+          console.log('Email successfully sent!', result.text);
+      }, (error) => {
+          console.error('Failed to send email.', error.text);
+      });
+
       setFormData({
         name: '',
         email: '',
@@ -115,14 +140,9 @@ function RentalForm() {
     }
   };
 
-  const filteredDateOptions = dateOptions.filter((date) => new Date(date) > unavailableDate);
-  const filteredTimeOptions = dates.startDate === unavailableDate?.toISOString().split('T')[0]
-    ? timeOptions.filter((time) => {
-        const [hours, minutes] = convertTo24HourFormat(time).split(':');
-        const timeInMinutes = parseInt(hours) * 60 + parseInt(minutes);
-        const unavailableTimeInMinutes = unavailableDate.getHours() * 60 + unavailableDate.getMinutes();
-        return timeInMinutes > unavailableTimeInMinutes;
-      })
+  const filteredDateOptions = dateOptions.filter((date) => new Date(date) >= new Date(unavailableDate));
+  const filteredTimeOptions = dates.startDate === unavailableDate
+    ? timeOptions.filter((time) => convertTo24HourFormat(time) >= convertTo24HourFormat(unavailableEndTime))
     : timeOptions;
 
   return (
@@ -141,7 +161,6 @@ function RentalForm() {
               </option>
             ))}
           </select>
-
           <label>Start Time:</label>
           <select
             name="startTime"
@@ -186,72 +205,20 @@ function RentalForm() {
         </div>
       </div>
 
-      <input
-        type="text"
-        name="name"
-        placeholder="Name"
-        value={formData.name}
-        onChange={handleInputChange}
-        required
-      />
-      <input
-        type="email"
-        name="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleInputChange}
-        required
-      />
-      <input
-        type="text"
-        name="phoneNumber"
-        placeholder="Phone Number" // New phone number field
-        value={formData.phoneNumber}
-        onChange={handleInputChange}
-        required
-      />
-      <input
-        type="text"
-        name="street"
-        placeholder="Street Address"
-        value={formData.street}
-        onChange={handleInputChange}
-        required
-      />
-      <input
-        type="text"
-        name="city"
-        placeholder="City"
-        value={formData.city}
-        onChange={handleInputChange}
-        required
-      />
-      <input
-        type="text"
-        name="state"
-        placeholder="State"
-        value={formData.state}
-        onChange={handleInputChange}
-        required
-      />
-      <input
-        type="text"
-        name="zip"
-        placeholder="Zip Code"
-        value={formData.zip}
-        onChange={handleInputChange}
-        required
-      />
-      <input
-        type="text"
-        name="dropoffLocation" // Dropoff location field
-        placeholder="Dropoff Location"
-        value={formData.dropoffLocation}
-        onChange={handleInputChange}
-        required
-      />
+      <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleInputChange} required />
+      <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleInputChange} required />
+      <input type="text" name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleInputChange} required />
+      <input type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleInputChange} required />
+      <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleInputChange} required />
+      <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleInputChange} required />
+      <input type="text" name="zip" placeholder="Zip Code" value={formData.zip} onChange={handleInputChange} required />
+      <input type="text" name="dropoffLocation" placeholder="Dropoff Location" value={formData.dropoffLocation} onChange={handleInputChange} required />
+
       <button onClick={handleSubmit}>Confirm Booking</button>
-      {message && <p>{message}</p>}
+      
+      <div ref={messageRef}>
+        {message && <p>{message}</p>}
+      </div>
     </div>
   );
 }

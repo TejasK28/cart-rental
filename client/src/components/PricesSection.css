@@ -1,0 +1,47 @@
+/* /client/src/components/PricesSection.css */
+.prices-section {
+    padding: 30px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+.prices-section h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.prices-section h3 {
+    font-size: 22px;
+    font-weight: 500;
+    color: #666;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.prices-section p {
+    font-size: 20px;
+    color: #333;
+    margin: 10px 0;
+}
+
+.prices-section ul {
+    list-style: none;
+    padding: 0;
+    font-size: 20px;
+}
+
+.prices-section ul li {
+    margin: 10px 0;
+    font-size: 22px;
+    font-weight: 400;
+    color: #555;
+}
+
+.prices-section strong {
+    color: #040404;
+    font-weight: 600;
+    font-size: 24px;
+}

@@ -14,7 +14,7 @@ function ReviewForm({ onReviewSubmitted }) {
     e.preventDefault();
     setErrorMessage(''); // Clear any previous error messages
     try {
-      await axios.post('https://cart-rental-gqqj.vercel.app/api/reviews', { name, reviewText, rating });
+      await axios.post('http://localhost:5001/api/reviews', { name, reviewText, rating });
       onReviewSubmitted();
       setName('');
       setReviewText('');
@@ -36,7 +36,7 @@ function ReviewForm({ onReviewSubmitted }) {
       <form className="review-form" onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Name (must match booking name)"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
