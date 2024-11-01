@@ -27,7 +27,7 @@ function RentalForm() {
   useEffect(() => {
     const fetchUnavailableDates = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/api/unavailable-dates');
+        const response = await axios.get('https://cart-rental-gqqj.vercel.app/api/unavailable-dates');
         const lastUnavailableDate = new Date(response.data.latestUnavailableDate); 
         setUnavailableDate(lastUnavailableDate);
 
@@ -90,7 +90,7 @@ function RentalForm() {
       const formattedStartDate = new Date(`${startDate}T${convertTo24HourFormat(startTime)}:00`).toISOString();
       const formattedEndDate = new Date(`${endDate}T${convertTo24HourFormat(endTime)}:00`).toISOString();
 
-      const response = await axios.post('http://localhost:5001/api/rent', {
+      const response = await axios.post('https://cart-rental-gqqj.vercel.app/api/rent', {
         ...formData,
         startDate: formattedStartDate,
         endDate: formattedEndDate

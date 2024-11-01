@@ -14,7 +14,7 @@ function ReviewForm({ onReviewSubmitted }) {
     e.preventDefault();
     setErrorMessage(''); // Clear any previous error messages
     try {
-      await axios.post('http://localhost:5001/api/reviews', { name, reviewText, rating });
+      await axios.post('https://cart-rental-gqqj.vercel.app/api/reviews', { name, reviewText, rating });
       onReviewSubmitted();
       setName('');
       setReviewText('');

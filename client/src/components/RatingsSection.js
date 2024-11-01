@@ -10,7 +10,7 @@ function RatingsSection() {
   // Fetch top reviews function
   const fetchTopReviews = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/reviews/top');
+      const response = await axios.get('https://cart-rental-gqqj.vercel.app/api/reviews/top');
       setTopReviews(response.data);
     } catch (error) {
       console.error("Error fetching top reviews:", error);
