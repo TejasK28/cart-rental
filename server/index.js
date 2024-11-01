@@ -11,39 +11,50 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
 
+  // Define timeOptions array here
+const timeOptions = [
+  '06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+  '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM',
+  '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'
+];
 
 // BOOKING ----------------------------------------------------------------
-const Booking = require('./models/Booking'); // Ensure the Booking model is updated with phoneNumber and dropoffLocation
+// Define the Booking schema
+const bookingSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  phoneNumber: String,
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    zip: String,
+  },
+  dropoffLocation: String,
+  startDateTime: Date,
+  endDateTime: Date,
+  createdAt: { type: Date, default: Date.now },
+});
 
+const Booking = mongoose.model('Booking', bookingSchema);
+
+// Endpoint to create a booking
 app.post('/api/rent', async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      phoneNumber, // New field added for validation and saving
-      street,
-      city,
-      state,
-      zip,
-      dropoffLocation,
-      startDate,
-      endDate
-    } = req.body;
+    const { name, email, phoneNumber, street, city, state, zip, dropoffLocation, startDateTime, endDateTime } = req.body;
 
-    // Check that all required fields are provided
-    if (!name || !email || !phoneNumber || !street || !city || !state || !zip || !dropoffLocation || !startDate || !endDate) {
+    if (!name || !email || !phoneNumber || !street || !city || !state || !zip || !dropoffLocation || !startDateTime || !endDateTime) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     const newBooking = new Booking({
       name,
       email,
-      phoneNumber, // Save phone number along with other fields
+      phoneNumber,
       address: { street, city, state, zip },
       dropoffLocation,
-      startDate,
-      endDate,
-      createdAt: new Date()
+      startDateTime,
+      endDateTime,
     });
 
     await newBooking.save();
@@ -54,31 +65,21 @@ app.post('/api/rent', async (req, res) => {
   }
 });
 
-// Endpoint to get the latest unavailable end date and time
+// Endpoint to get unavailable date-time ranges
 app.get('/api/unavailable-dates', async (req, res) => {
   try {
-    const latestBooking = await Booking.findOne().sort({ endDate: -1 });
-    if (latestBooking) {
-      const endDate = new Date(latestBooking.endDate);
-      return res.status(200).json({
-        latestUnavailableDate: endDate.toISOString().split('T')[0], // Date part only
-        latestUnavailableEndTime: endDate.toTimeString().split(' ')[0], // Time part only
-      });
-    } else {
-      // No bookings found, return no unavailable dates
-      return res.status(200).json({
-        latestUnavailableDate: null,
-        latestUnavailableEndTime: null,
-      });
-    }
+    const bookings = await Booking.find({}, 'startDateTime endDateTime');
+    const unavailableSlots = bookings.map(booking => ({
+      start: booking.startDateTime,
+      end: booking.endDateTime,
+    }));
+
+    res.status(200).json({ unavailableSlots });
   } catch (error) {
     console.error("Error fetching unavailable dates:", error);
     res.status(500).json({ message: 'Server error, please try again' });
   }
 });
-
-
-
 //REVIEW ------------------------------
 const Review = require('./models/Review'); // Include the Review model
 

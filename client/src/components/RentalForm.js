@@ -1,11 +1,31 @@
+// client/src/components/RentalForm.js
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import emailjs from 'emailjs-com';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import './RentalForm.css';
 
+
+
+// Helper function to convert to EST
+const formatToEST = (date) => {
+  return new Date(date).toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
 function RentalForm() {
-  const [dates, setDates] = useState({ startDate: '', endDate: '', startTime: '', endTime: '' });
+  const [dates, setDates] = useState({ startDateTime: null, endDateTime: null });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,43 +36,25 @@ function RentalForm() {
     zip: '',
     dropoffLocation: ''
   });
+  const [unavailableSlots, setUnavailableSlots] = useState([]);
   const [message, setMessage] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const [estimatedCost, setEstimatedCost] = useState(0);
-  const [dateOptions, setDateOptions] = useState([]);
-  const [unavailableDate, setUnavailableDate] = useState(null);
-  const [unavailableEndTime, setUnavailableEndTime] = useState(null);
   const [isContractSigned, setIsContractSigned] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [signature, setSignature] = useState('');
 
-  const timeOptions = [
-    '06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-    '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM',
-    '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '12:00 AM'
-  ];
+  const fetchUnavailableSlots = async () => {
+    try {
+      const response = await axios.get('http://localhost:5001/api/unavailable-dates');
+      setUnavailableSlots(response.data.unavailableSlots || []);
+    } catch (error) {
+      console.error("Error fetching unavailable slots:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchUnavailableDates = async () => {
-      try {
-        const response = await axios.get('http://localhost:5001/api/unavailable-dates');
-        setUnavailableDate(response.data.latestUnavailableDate);
-        setUnavailableEndTime(response.data.latestUnavailableEndTime);
-
-        const options = [];
-        const today = new Date();
-        for (let i = 0; i < 60; i++) {
-          const futureDate = new Date(today);
-          futureDate.setDate(today.getDate() + i);
-          options.push(futureDate.toISOString().split('T')[0]);
-        }
-
-        setDateOptions(options);
-      } catch (error) {
-        console.error("Error fetching unavailable dates:", error);
-      }
-    };
-    fetchUnavailableDates();
+    fetchUnavailableSlots();
   }, []);
 
   useEffect(() => {
@@ -67,30 +69,53 @@ function RentalForm() {
   }, [message]);
 
   useEffect(() => {
-    if (dates.startDate && dates.endDate) {
-      const start = new Date(dates.startDate);
-      const end = new Date(dates.endDate);
+    if (dates.startDateTime && dates.endDateTime) {
+      const start = new Date(dates.startDateTime);
+      const end = new Date(dates.endDateTime);
       const dayDifference = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
       setEstimatedCost(dayDifference * 100);
     } else {
       setEstimatedCost(0);
     }
-  }, [dates.startDate, dates.endDate]);
+  }, [dates.startDateTime, dates.endDateTime]);
 
-  const convertTo24HourFormat = (time12h) => {
-    const [time, modifier] = time12h.split(' ');
-    let [hours, minutes] = time.split(':');
-    if (hours === '12') hours = '00';
-    if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
-    return `${hours}:${minutes}`;
+  const isUnavailable = (selectedStart, selectedEnd) => {
+    return unavailableSlots.some(slot => {
+      const slotStart = new Date(slot.start);
+      const slotEnd = new Date(slot.end);
+      return (
+        (selectedStart >= slotStart && selectedStart < slotEnd) || 
+        (selectedEnd > slotStart && selectedEnd <= slotEnd) ||
+        (selectedStart <= slotStart && selectedEnd >= slotEnd)
+      );
+    });
   };
 
-  const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    setDates((prevDates) => ({ ...prevDates, [name]: value }));
-    if (name === 'startDate' && value !== unavailableDate) {
-      setUnavailableEndTime(null);
-    }
+  const filterUnavailableDates = (date) => {
+    return !unavailableSlots.some(slot => {
+      const slotStart = new Date(slot.start);
+      const slotEnd = new Date(slot.end);
+      return (
+        date >= slotStart.setHours(0, 0, 0, 0) &&
+        date <= slotEnd.setHours(23, 59, 59, 999)
+      );
+    });
+  };
+
+  const filterUnavailableTimes = (time) => {
+    if (!dates.startDateTime) return true;
+
+    const selectedDate = new Date(dates.startDateTime);
+    selectedDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
+
+    return unavailableSlots.every(slot => {
+      const slotStart = new Date(slot.start);
+      const slotEnd = new Date(slot.end);
+
+      return (
+        selectedDate.getDate() !== slotStart.getDate() || selectedDate >= slotEnd
+      );
+    });
   };
 
   const handleInputChange = (e) => setFormData({
@@ -101,34 +126,49 @@ function RentalForm() {
   const handleSignatureChange = (e) => setSignature(e.target.value);
 
   const handleSubmit = async () => {
-    const { startDate, endDate, startTime, endTime } = dates;
+
+    console.log(isContractSigned)
+    console.log(signature)
 
     if (!isContractSigned || !signature) {
       setMessage("Please sign and accept the contract before booking.");
       return;
     }
 
-    if (!startDate || !endDate || !startTime || !endTime) {
-      setMessage("Please select both start and end dates and times.");
+    const { startDateTime, endDateTime } = dates;
+
+
+    if (!startDateTime || !endDateTime) {
+      setMessage("Please select both start and end date-time.");
       return;
     }
 
-    if (new Date(`${endDate}T${convertTo24HourFormat(endTime)}`) <= new Date(`${startDate}T${convertTo24HourFormat(startTime)}`)) {
+    if (new Date(endDateTime) <= new Date(startDateTime)) {
       setMessage("End date and time must be after the start date and time.");
       return;
     }
 
-    try {
-      const formattedStartDate = new Date(`${startDate}T${convertTo24HourFormat(startTime)}:00`).toISOString();
-      const formattedEndDate = new Date(`${endDate}T${convertTo24HourFormat(endTime)}:00`).toISOString();
+    if (isUnavailable(new Date(startDateTime), new Date(endDateTime))) {
+      setMessage("The selected time range overlaps with an existing booking.");
+      return;
+    }
 
-      const response = await axios.post('http://localhost:5001/api/rent', {
+    try {
+      await axios.post('http://localhost:5001/api/rent', {
         ...formData,
-        startDate: formattedStartDate,
-        endDate: formattedEndDate
+        startDateTime,
+        endDateTime
       });
 
-      setMessage(response.data.message);
+      setMessage('Booking created successfully. You will be contacted with more information.');
+
+      
+
+      
+
+      // Convert dates to EST before sending in email
+      const estStartDate = formatToEST(startDateTime);
+      const estEndDate = formatToEST(endDateTime);
 
       emailjs.send('service_tn4oh1k', 'template_r4qpagw', {
         name: formData.name,
@@ -139,10 +179,8 @@ function RentalForm() {
         state: formData.state,
         zip: formData.zip,
         dropoffLocation: formData.dropoffLocation,
-        startDate,
-        endDate,
-        startTime,
-        endTime,
+        startDate: estStartDate,
+        endDate: estEndDate
       }, 'E3a2a-M3qNeDc3tUs')
       .then((result) => {
           console.log('Email successfully sent!', result.text);
@@ -160,25 +198,25 @@ function RentalForm() {
         zip: '',
         dropoffLocation: ''
       });
-      setDates({ startDate: '', endDate: '', startTime: '', endTime: '' });
+      setDates({ startDateTime: null, endDateTime: null });
       setSignature('');
       setIsContractSigned(false);
-    } catch (error) {
-      setMessage(error.response ? error.response.data.message : 'Error submitting form');
-    }
-  };
 
-  const filteredDateOptions = dateOptions.filter((date) => new Date(date) >= new Date(unavailableDate));
-  const filteredTimeOptions = dates.startDate === unavailableDate
-    ? timeOptions.filter((time) => convertTo24HourFormat(time) >= convertTo24HourFormat(unavailableEndTime))
-    : timeOptions;
+      await fetchUnavailableSlots();
+
+    } catch (error) {
+      setMessage('Error submitting form. Please fill out all details.');
+    }
+
+    
+
+
+  };
 
   return (
     <div className="rental-form">
       <Link to="/" className="back-arrow">← Back</Link>
-
       <h2>Reserve the Chai Cart</h2>
-      
       {showPopup && (
         <div className="error-popup">
           <span>{message}</span>
@@ -186,47 +224,33 @@ function RentalForm() {
       )}
 
       <div className="date-time-selection">
-        <div className="date-time-group">
-          <label>Start Date:</label>
-          <select name="startDate" onChange={handleDateChange} value={dates.startDate}>
-            <option value="">Select Start Date</option>
-            {filteredDateOptions.map((date) => (
-              <option key={date} value={date}>
-                {date}
-              </option>
-            ))}
-          </select>
-          <label>Start Time:</label>
-          <select name="startTime" onChange={handleDateChange} value={dates.startTime} disabled={!dates.startDate}>
-            <option value="">Select Start Time</option>
-            {filteredTimeOptions.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-        </div>
+        <label>Start Date and Time:</label>
+        <DatePicker
+          selected={dates.startDateTime}
+          onChange={(date) => setDates({ ...dates, startDateTime: date })}
+          showTimeSelect
+          timeIntervals={30}
+          timeCaption="Time"
+          dateFormat="MMMM d, yyyy h:mm aa"
+          filterDate={filterUnavailableDates}
+          filterTime={filterUnavailableTimes}
+          minDate={new Date()}
+          placeholderText="Select Start Date and Time"
+        />
 
-        <div className="date-time-group">
-          <label>End Date:</label>
-          <select name="endDate" onChange={handleDateChange} value={dates.endDate} disabled={!dates.startDate}>
-            <option value="">Select End Date</option>
-            {dateOptions.map((date) => (
-              <option key={date} value={date} disabled={new Date(date) < new Date(dates.startDate)}>
-                {date}
-              </option>
-            ))}
-          </select>
-          <label>End Time:</label>
-          <select name="endTime" onChange={handleDateChange} value={dates.endTime} disabled={!dates.endDate}>
-            <option value="">Select End Time</option>
-            {timeOptions.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-        </div>
+        <label>End Date and Time:</label>
+        <DatePicker
+          selected={dates.endDateTime}
+          onChange={(date) => setDates({ ...dates, endDateTime: date })}
+          showTimeSelect
+          timeIntervals={30}
+          timeCaption="Time"
+          dateFormat="MMMM d, yyyy h:mm aa"
+          filterDate={filterUnavailableDates}
+          filterTime={filterUnavailableTimes}
+          minDate={dates.startDateTime}
+          placeholderText="Select End Date and Time"
+        />
       </div>
 
       <div className="contact-info">
@@ -248,15 +272,15 @@ function RentalForm() {
           <li><span className="cost-label">Estimated Shipping Cost:</span><span className="cost-amount">TBD</span>
             <small className="cost-note">(based on delivery location and distance & will be charged upon delivery)</small>
           </li>
-          <li className="total-cost"><span className="cost-label">Estimated Total (incl. tax):</span><span className="cost-amount">${(estimatedCost + 40 * 1.0625).toFixed(2)}</span></li>
+          <li className="total-cost"><span className="cost-label">Estimated Total (incl. tax):</span><span className="cost-amount">${((estimatedCost + 40) * 1.06625).toFixed(2)}</span></li>
         </ul>
-        <p className="tax-note">*Includes estimated tax at 6.25%</p>
+        <p className="tax-note">*Includes estimated tax at 6.625%</p>
       </div>
 
       <button onClick={() => setIsModalOpen(!isModalOpen)}>Review & Accept Contract</button>
 
       {isModalOpen && (
-        <div className="modal-overlay">
+          <div className="modal-overlay">
           <div className="modal-content">
             <h3>Rental Agreement</h3>
             <p>Please don't mess up the cart :(</p>
@@ -269,7 +293,10 @@ function RentalForm() {
         </div>
       )}
 
-      <button onClick={handleSubmit} disabled={!isContractSigned}>Confirm Booking</button>
+    
+      <button onClick={handleSubmit} >Confirm Booking</button>
+
+         
     </div>
   );
 }
