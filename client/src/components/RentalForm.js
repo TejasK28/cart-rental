@@ -285,18 +285,64 @@ const handleSubmit = async () => {
       <button onClick={() => setIsModalOpen(!isModalOpen)}>Review & Accept Contract</button>
 
       {isModalOpen && (
-          <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Rental Agreement</h3>
-            <p>Please don't mess up the cart :(</p>
-            <p>More contract details go here...</p>
-            <label>Signature (type your name): 
-              <input type="text" value={signature} onChange={handleSignatureChange} required />
-            </label>
-            <button onClick={() => { setIsContractSigned(!!signature.trim()); setIsModalOpen(false); }}>Accept & Close</button>
-          </div>
-        </div>
-      )}
+  <div className="modal-overlay" style={{ 
+    position: 'fixed', 
+    top: '50%', 
+    left: '50%', 
+    transform: 'translate(-50%, -50%)', 
+    width: '90vw', 
+    maxWidth: '500px', 
+    height: '80vh', 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    borderRadius: '8px'
+  }}>
+    <div className="modal-content" style={{ 
+      backgroundColor: '#fff', 
+      padding: '20px', 
+      borderRadius: '8px', 
+      width: '100%', 
+      maxHeight: '100%', 
+      overflowY: 'auto', 
+      textAlign: 'center', 
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+    }}>
+      <h3>Rental Agreement</h3>
+      <p>This Rental Agreement is entered into between Shivam Patel, referred to as the "Owner," and the "Renter," regarding the rental of the Chai/Candy Cart (White, 4ft by 2ft by 8ft).</p>
+      
+      <h4>Rental Terms</h4>
+      <p>The rental term shall commence on a specified date and time, and the decor piece must be returned on or before the end date. The Renter shall return the decor piece in the same condition as rented, with normal wear and tear excepted.</p>
+
+      <h4>Rental Fee</h4>
+      <p>The Renter agrees to pay a rental fee of $100 per day, payable at delivery. Accepted payment methods include CASH, ZELLE, and VENMO.</p>
+
+      <h4>Security Deposit</h4>
+      <p>A security deposit of $40 is required, refundable within the same day of the rental's end, provided the decor piece is returned in the same condition.</p>
+
+      <h4>Care and Maintenance</h4>
+      <p>The Renter agrees to handle the decor piece carefully, use it only for its intended purpose, and avoid spilling liquids or exposing it to rain. Cover with a tarp if rain is expected.</p>
+
+      <h4>Delivery and Return</h4>
+      <p>Delivery and pickup will incur an additional fee based on distance. The decor piece remains the property of the Owner.</p>
+
+      <h4>Signatures</h4>
+      <p>By signing, the Renter agrees to abide by these terms.</p>
+
+      <label>Signature (type your name): 
+        <input type="text" value={signature} onChange={handleSignatureChange} required />
+      </label>
+      
+      <button onClick={() => { setIsContractSigned(!!signature.trim()); setIsModalOpen(false); }}>
+        Accept & Close
+      </button>
+    </div>
+  </div>
+)}
+
+
+
 
     
       <button onClick={handleSubmit} >Confirm Booking</button>
