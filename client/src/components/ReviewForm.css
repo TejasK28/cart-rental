@@ -64,3 +64,55 @@
     margin-top: 8px;
     font-size: 14px;
 }
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: -1px;
+    /* Adds space between each input */
+    max-width: 400px;
+    /* Set a max width for alignment */
+    margin: 0 auto;
+    /* Centers the form */
+}
+
+.contact-info input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.error-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(147, 249, 237, 0.8);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
