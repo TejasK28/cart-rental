@@ -8,3 +8,6 @@
 
 # Build folder
 /client/build
+
+*.mp4
+*.jpg
