@@ -1,6 +1,4 @@
-// /client/src/components/ReviewForm.js
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ReviewForm.css';
 
@@ -9,10 +7,17 @@ function ReviewForm({ onReviewSubmitted }) {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(5);
   const [errorMessage, setErrorMessage] = useState('');
+  const [errorTimeout, setErrorTimeout] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear any previous error messages
+    setErrorMessage('');
+    
+    // Clear any existing error timeout
+    if (errorTimeout) {
+      clearTimeout(errorTimeout);
+    }
+
     try {
       await axios.post('http://localhost:5001/api/reviews', { name, reviewText, rating });
       onReviewSubmitted();
@@ -23,22 +28,32 @@ function ReviewForm({ onReviewSubmitted }) {
       if (error.response && error.response.status === 403) {
         setErrorMessage(error.response.data.message);
       } else {
-        console.error("Error submitting review:", error);
         setErrorMessage("An error occurred. Please try again.");
       }
+      
+      // Set a timeout to clear the error message after 3 seconds
+      const timeout = setTimeout(() => setErrorMessage(''), 3000);
+      setErrorTimeout(timeout);
     }
   };
 
+  useEffect(() => {
+    // Cleanup timeout on component unmount
+    return () => {
+      if (errorTimeout) {
+        clearTimeout(errorTimeout);
+      }
+    };
+  }, [errorTimeout]);
+
   return (
     <div className="review-form-container">
-          
-
       <form className="review-form" onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Name (must match booking name)"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setName(e.target.value.toLowerCase())}
           required
         />
         <textarea
@@ -52,9 +67,9 @@ function ReviewForm({ onReviewSubmitted }) {
             <option key={num} value={num}>{num} Star{num > 1 ? 's' : ''}</option>
           ))}
         </select>
-        <button type="submit">Submit</button>
+        <button type="submit">Submit Review</button>
       </form>
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      {errorMessage && <div className="error-popup">{errorMessage}</div>}
     </div>
   );
 }

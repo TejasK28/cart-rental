@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import emailjs from 'emailjs-com';
@@ -17,7 +17,7 @@ function RentalForm() {
     dropoffLocation: ''
   });
   const [message, setMessage] = useState('');
-  const [showPopup, setShowPopup] = useState(false); // State for popup visibility
+  const [showPopup, setShowPopup] = useState(false);
   const [estimatedCost, setEstimatedCost] = useState(0);
   const [dateOptions, setDateOptions] = useState([]);
   const [unavailableDate, setUnavailableDate] = useState(null);
@@ -41,7 +41,6 @@ function RentalForm() {
 
         const options = [];
         const today = new Date();
-
         for (let i = 0; i < 60; i++) {
           const futureDate = new Date(today);
           futureDate.setDate(today.getDate() + i);
@@ -53,18 +52,17 @@ function RentalForm() {
         console.error("Error fetching unavailable dates:", error);
       }
     };
-
     fetchUnavailableDates();
   }, []);
 
   useEffect(() => {
     if (message) {
-      setShowPopup(true); // Show popup when message changes
+      setShowPopup(true);
       const timeout = setTimeout(() => {
-        setShowPopup(false); // Hide popup after 3 seconds
-        setMessage(''); // Clear message
+        setShowPopup(false);
+        setMessage('');
       }, 3000);
-      return () => clearTimeout(timeout); // Cleanup timeout on unmount
+      return () => clearTimeout(timeout);
     }
   }, [message]);
 
@@ -72,7 +70,7 @@ function RentalForm() {
     if (dates.startDate && dates.endDate) {
       const start = new Date(dates.startDate);
       const end = new Date(dates.endDate);
-      let dayDifference = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+      const dayDifference = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
       setEstimatedCost(dayDifference * 100);
     } else {
       setEstimatedCost(0);

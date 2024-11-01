@@ -1,5 +1,4 @@
-// ContactSection.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import emailjs from 'emailjs-com';
 import './ContactSection.css';
 
@@ -19,7 +18,7 @@ function ContactSection() {
   const handleSubmit = (e) => {
     e.preventDefault();
     emailjs.send('service_tn4oh1k', 'template_nvvzizg', formData, 'E3a2a-M3qNeDc3tUs')
-      .then((response) => {
+      .then(() => {
         setMessageStatus('Message sent successfully!');
         setFormData({ name: '', email: '', message: '' });
       })
@@ -29,10 +28,18 @@ function ContactSection() {
       });
   };
 
+  // Clear the message status after a delay
+  useEffect(() => {
+    if (messageStatus) {
+      const timer = setTimeout(() => setMessageStatus(''), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [messageStatus]);
+
   return (
     <div className="contact-section">
       <h2>Contact Us</h2>
-      <p>Let us know if you have any questions!</p>
+      <p>Let us know if you have any questions or feedback!</p>
       <form className="contact-form" onSubmit={handleSubmit}>
         <input 
           type="text" 
@@ -58,7 +65,7 @@ function ContactSection() {
           required
         />
         <button type="submit">Send Message</button>
-        {messageStatus && <p>{messageStatus}</p>}
+        {messageStatus && <div className="message-popup">{messageStatus}</div>}
       </form>
     </div>
   );
