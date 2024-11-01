@@ -6,7 +6,7 @@ require('dotenv').config();
 const app = express();
 //app.use(cors());
 app.use(express.json());
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: ['https://cart-rental-gqqj.vercel.app/', 'http://localhost:5001'] }));
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
