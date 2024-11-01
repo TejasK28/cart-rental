@@ -95,7 +95,21 @@ function RentalForm() {
         startDate: formattedStartDate,
         endDate: formattedEndDate
       });
+
       setMessage(response.data.message);
+
+      // Reset formData and dates to initial values
+      setFormData({
+        name: '',
+        email: '',
+        phoneNumber: '',
+        street: '',
+        city: '',
+        state: '',
+        zip: '',
+        dropoffLocation: ''
+      });
+      setDates({ startDate: '', endDate: '', startTime: '', endTime: '' });
     } catch (error) {
       setMessage(error.response ? error.response.data.message : 'Error submitting form');
     }
