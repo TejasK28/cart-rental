@@ -6,6 +6,7 @@ function ContactSection() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '', 
     message: '',
   });
   const [messageStatus, setMessageStatus] = useState('');
@@ -20,7 +21,7 @@ function ContactSection() {
     emailjs.send('service_tn4oh1k', 'template_nvvzizg', formData, 'E3a2a-M3qNeDc3tUs')
       .then(() => {
         setMessageStatus('Message sent successfully!');
-        setFormData({ name: '', email: '', message: '' });
+        setFormData({ name: '', email: '', phone: '', message: '' });
       })
       .catch((error) => {
         console.error('Failed to send message:', error);
@@ -54,6 +55,14 @@ function ContactSection() {
           name="email" 
           placeholder="Your Email" 
           value={formData.email}
+          onChange={handleChange}
+          required 
+        />
+        <input 
+          type="tel" 
+          name="phone" 
+          placeholder="Your Phone Number" 
+          value={formData.phone}
           onChange={handleChange}
           required 
         />

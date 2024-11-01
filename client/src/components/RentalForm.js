@@ -69,17 +69,26 @@ function RentalForm() {
   }, [message]);
 
   useEffect(() => {
-    if (dates.startDateTime && dates.endDateTime) {
-      const start = new Date(dates.startDateTime);
-      const end = new Date(dates.endDateTime);
-      let dayDifference = Math.floor((end - start) / (1000 * 60 * 60 * 24));
-      if(dayDifference === 0)
+  if (dates.startDateTime && dates.endDateTime) {
+    const start = new Date(dates.startDateTime);
+    const end = new Date(dates.endDateTime);
+
+    // Ignore time by setting hours to midnight
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    // Calculate absolute day difference and ensure it's a number
+    let dayDifference = Math.abs(Number(end.toString().split(' ')[2]) - Number(start.toString().split(' ')[2]));
+    if(dayDifference === 0)
         dayDifference++;
-      setEstimatedCost(Math.abs(dayDifference * 100));
-    } else {
-      setEstimatedCost(0);
-    }
-  }, [dates.startDateTime, dates.endDateTime]);
+    setEstimatedCost(Number(dayDifference * 100));
+
+
+  } else {
+    setEstimatedCost(0);
+  }
+}, [dates.startDateTime, dates.endDateTime]);
+
 
   const isUnavailable = (selectedStart, selectedEnd) => {
     return unavailableSlots.some(slot => {
@@ -127,93 +136,87 @@ function RentalForm() {
 
   const handleSignatureChange = (e) => setSignature(e.target.value);
 
-  const handleSubmit = async () => {
+const TAX_RATE = 1.06625; // 6.625% tax rate
 
-    console.log(isContractSigned)
-    console.log(signature)
+const handleSubmit = async () => {
+  if (!isContractSigned || !signature) {
+    setMessage("Please sign and accept the contract before booking.");
+    return;
+  }
 
-    if (!isContractSigned || !signature) {
-      setMessage("Please sign and accept the contract before booking.");
-      return;
-    }
+  const { startDateTime, endDateTime } = dates;
 
-    const { startDateTime, endDateTime } = dates;
+  if (!startDateTime || !endDateTime) {
+    setMessage("Please select both start and end date-time.");
+    return;
+  }
 
+  if (new Date(endDateTime) <= new Date(startDateTime)) {
+    setMessage("End date and time must be after the start date and time.");
+    return;
+  }
 
-    if (!startDateTime || !endDateTime) {
-      setMessage("Please select both start and end date-time.");
-      return;
-    }
+  if (isUnavailable(new Date(startDateTime), new Date(endDateTime))) {
+    setMessage("The selected time range overlaps with an existing booking.");
+    return;
+  }
 
-    if (new Date(endDateTime) <= new Date(startDateTime)) {
-      setMessage("End date and time must be after the start date and time.");
-      return;
-    }
+  // Calculate the total cost after tax
+  const totalCost = (estimatedCost + 40) * TAX_RATE;
 
-    if (isUnavailable(new Date(startDateTime), new Date(endDateTime))) {
-      setMessage("The selected time range overlaps with an existing booking.");
-      return;
-    }
+  try {
+    await axios.post('http://localhost:5001/api/rent', {
+      ...formData,
+      startDateTime,
+      endDateTime,
+      estimatedTotalCost: (Number(totalCost).toFixed(2))
+    });
 
-    try {
-      await axios.post('http://localhost:5001/api/rent', {
-        ...formData,
-        startDateTime,
-        endDateTime
-      });
+    setMessage('Booking created successfully. You will be contacted with more information.');
 
-      setMessage('Booking created successfully. You will be contacted with more information.');
+    // Send email confirmation (as before)
+    const estStartDate = formatToEST(startDateTime);
+    const estEndDate = formatToEST(endDateTime);
 
-      
+    emailjs.send('service_tn4oh1k', 'template_r4qpagw', {
+      name: formData.name,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      street: formData.street,
+      city: formData.city,
+      state: formData.state,
+      zip: formData.zip,
+      dropoffLocation: formData.dropoffLocation,
+      startDate: estStartDate,
+      endDate: estEndDate,
+      estimatedTotalCost: totalCost.toFixed(2), // Include cost in email template
+    }, 'E3a2a-M3qNeDc3tUs')
+    .then((result) => {
+      console.log('Email successfully sent!', result.text);
+    }, (error) => {
+      console.error('Failed to send email.', error.text);
+    });
 
-      
+    setFormData({
+      name: '',
+      email: '',
+      phoneNumber: '',
+      street: '',
+      city: '',
+      state: '',
+      zip: '',
+      dropoffLocation: ''
+    });
+    setDates({ startDateTime: null, endDateTime: null });
+    setSignature('');
+    setIsContractSigned(false);
 
-      // Convert dates to EST before sending in email
-      const estStartDate = formatToEST(startDateTime);
-      const estEndDate = formatToEST(endDateTime);
+    await fetchUnavailableSlots();
 
-      emailjs.send('service_tn4oh1k', 'template_r4qpagw', {
-        name: formData.name,
-        email: formData.email,
-        phoneNumber: formData.phoneNumber,
-        street: formData.street,
-        city: formData.city,
-        state: formData.state,
-        zip: formData.zip,
-        dropoffLocation: formData.dropoffLocation,
-        startDate: estStartDate,
-        endDate: estEndDate
-      }, 'E3a2a-M3qNeDc3tUs')
-      .then((result) => {
-          console.log('Email successfully sent!', result.text);
-      }, (error) => {
-          console.error('Failed to send email.', error.text);
-      });
-
-      setFormData({
-        name: '',
-        email: '',
-        phoneNumber: '',
-        street: '',
-        city: '',
-        state: '',
-        zip: '',
-        dropoffLocation: ''
-      });
-      setDates({ startDateTime: null, endDateTime: null });
-      setSignature('');
-      setIsContractSigned(false);
-
-      await fetchUnavailableSlots();
-
-    } catch (error) {
-      setMessage('Error submitting form. Please fill out all details.');
-    }
-
-    
-
-
-  };
+  } catch (error) {
+    setMessage('Error submitting form. Please fill out all details.');
+  }
+};
 
   return (
     <div className="rental-form">
@@ -274,7 +277,7 @@ function RentalForm() {
           <li><span className="cost-label">Estimated Shipping Cost:</span><span className="cost-amount">TBD</span>
             <small className="cost-note">(based on delivery location and distance & will be charged upon delivery)</small>
           </li>
-          <li className="total-cost"><span className="cost-label">Estimated Total (incl. tax):</span><span className="cost-amount">${((estimatedCost + 40) * 1.06625).toFixed(2)}</span></li>
+          <li className="total-cost"><span className="cost-label">Estimated Total (incl. tax):</span><span className="cost-amount">${ ((estimatedCost + 40) * TAX_RATE).toFixed(2)}</span></li>
         </ul>
         <p className="tax-note">*Includes estimated tax at 6.625%</p>
       </div>

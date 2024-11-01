@@ -33,17 +33,30 @@ const bookingSchema = new mongoose.Schema({
   dropoffLocation: String,
   startDateTime: Date,
   endDateTime: Date,
+  estimatedTotalCost: Number, // New field for estimated total cost after tax
   createdAt: { type: Date, default: Date.now },
 });
 
+
 const Booking = mongoose.model('Booking', bookingSchema);
 
-// Endpoint to create a booking
 app.post('/api/rent', async (req, res) => {
   try {
-    const { name, email, phoneNumber, street, city, state, zip, dropoffLocation, startDateTime, endDateTime } = req.body;
+    const { 
+      name, 
+      email, 
+      phoneNumber, 
+      street, 
+      city, 
+      state, 
+      zip, 
+      dropoffLocation, 
+      startDateTime, 
+      endDateTime, 
+      estimatedTotalCost // Include this in the destructuring
+    } = req.body;
 
-    if (!name || !email || !phoneNumber || !street || !city || !state || !zip || !dropoffLocation || !startDateTime || !endDateTime) {
+    if (!name || !email || !phoneNumber || !street || !city || !state || !zip || !dropoffLocation || !startDateTime || !endDateTime || !estimatedTotalCost) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -55,6 +68,7 @@ app.post('/api/rent', async (req, res) => {
       dropoffLocation,
       startDateTime,
       endDateTime,
+      estimatedTotalCost: parseFloat(estimatedTotalCost) // Ensure it's a number
     });
 
     await newBooking.save();
@@ -64,6 +78,7 @@ app.post('/api/rent', async (req, res) => {
     res.status(500).json({ message: 'Booking creation failed' });
   }
 });
+
 
 // Endpoint to get unavailable date-time ranges
 app.get('/api/unavailable-dates', async (req, res) => {
