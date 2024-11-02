@@ -6,7 +6,6 @@
   align-items: center;
   overflow: hidden;
   color: #ffffff;
-  border-radius: 12px;
   /* Rounded corners */
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
   /* Slight shadow for a polished look */
@@ -64,18 +63,32 @@
   margin-top: 20px;
   padding: 12px 24px;
   font-size: 1.2rem;
-  background: #ff6347;
-  color: #fff;
-  border-radius: 50px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #b57edc, #8a2be2);
+  /* Purplish gradient */
+  color: #ffffff;
+  border-radius: 30px;
+  /* Softer rounded corners */
   text-decoration: none;
-  box-shadow: 0 4px 15px rgba(255, 99, 71, 0.5);
+  box-shadow: 0 5px 15px rgba(205, 162, 244, 0.4);
+  /* Subtle shadow */
   transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .cta-button:hover {
-  background: #ff4500;
-  box-shadow: 0 6px 25px rgba(255, 69, 0, 0.6);
+  background: linear-gradient(135deg, #a75cd1, #7511b8);
+  /* Darker purple on hover */
+  box-shadow: 0 7px 20px rgba(194, 151, 233, 0.6);
+  /* Enhanced shadow on hover */
   transform: translateY(-3px);
+  /* Lifted appearance */
+}
+
+.cta-button:active {
+  transform: translateY(1px);
+  /* Pressed effect */
+  background: linear-gradient(135deg, #d1a9f6, #b57edc);
+  /* Invert gradient for active */
 }
 
 /* Animations */

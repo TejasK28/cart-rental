@@ -24,9 +24,7 @@ const mediaItems = [
   { id: 7, type: 'image', src: c6, alt: 'Product Image 6' },
   { id: 8, type: 'image', src: c7, alt: 'Product Image 7' },
   { id: 9, type: 'image', src: c8, alt: 'Product Image 8' },
-  { id: 10, type: 'image', src: c9, alt: 'Product Image 9' },
-  { id: 11, type: 'image', src: c10, alt: 'Product Image 10' },
-  { id: 11, type: 'image', src: c11, alt: 'Product Image 11' }
+  { id: 10, type: 'image', src: c9, alt: 'Product Image 9' }
 ];
 
 function MediaGallery() {

@@ -219,8 +219,10 @@ const handleSubmit = async () => {
 };
 
   return (
-    <div className="rental-form">
-      <Link to="/" className="back-arrow">← Back</Link>
+    <div className="rental-form" style={{position :'relative'}}>
+     
+<Link to="/" className="back-arrow button-link">← Back</Link>
+      
       <h2>Reserve the Dessert Cart</h2>
       {showPopup && (
         <div className="error-popup">
@@ -240,7 +242,7 @@ const handleSubmit = async () => {
    // filterDate={filterUnavailableDates}
     //filterTime={filterUnavailableTimes}
     minDate={new Date()}
-    placeholderText="Select Start Date and Time"
+    placeholderText="select date and time"
     className="rental-form-input" /* Add this line */
   />
 
@@ -255,22 +257,54 @@ const handleSubmit = async () => {
     //filterDate={filterUnavailableDates}
     //filterTime={filterUnavailableTimes}
     minDate={dates.startDateTime}
-    placeholderText="Select End Date and Time"
+    placeholderText="select date and time"
     className="rental-form-input" /* Add this line */
   />
 </div>
 
 
-      <div className="contact-info form-inputs-container">
-  <input className="rental-form-input" type="text" name="name" placeholder="Name" value={formData.name} onChange={handleInputChange} required />
-  <input className="rental-form-input" type="email" name="email" placeholder="Email" value={formData.email} onChange={handleInputChange} required />
-  <input className="rental-form-input" type="text" name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleInputChange} required />
-  <input className="rental-form-input" type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleInputChange} required />
-  <input className="rental-form-input" type="text" name="city" placeholder="City" value={formData.city} onChange={handleInputChange} required />
-  <input className="rental-form-input" type="text" name="state" placeholder="State" value={formData.state} onChange={handleInputChange} required />
-  <input className="rental-form-input" type="text" name="zip" placeholder="Zip Code" value={formData.zip} onChange={handleInputChange} required />
-  <input className="rental-form-input" type="text" name="dropoffLocation" placeholder="Dropoff Location" value={formData.dropoffLocation} onChange={handleInputChange} required />
+    <div className="contact-info form-inputs-container">
+  <label>
+    Name <span className="required">*</span>
+  </label>
+  <input className="rental-form-input" type="text" name="name" placeholder="name" value={formData.name} onChange={handleInputChange} required />
+
+  <label>
+    Email <span className="required">*</span>
+  </label>
+  <input className="rental-form-input" type="email" name="email" placeholder="email" value={formData.email} onChange={handleInputChange} required />
+
+  <label>
+    Phone Number <span className="required">*</span>
+  </label>
+  <input className="rental-form-input" type="text" name="phoneNumber" placeholder="number" value={formData.phoneNumber} onChange={handleInputChange} required />
+
+  <label>
+    Street <span className="required">*</span>
+  </label>
+  <input className="rental-form-input" type="text" name="street" placeholder="street" value={formData.street} onChange={handleInputChange} required />
+
+  <label>
+    City <span className="required">*</span>
+  </label>
+  <input className="rental-form-input" type="text" name="city" placeholder="city" value={formData.city} onChange={handleInputChange} required />
+
+  <label>
+    State <span className="required">*</span>
+  </label>
+  <input className="rental-form-input" type="text" name="state" placeholder="state" value={formData.state} onChange={handleInputChange} required />
+
+  <label>
+    Zip Code <span className="required">*</span>
+  </label>
+  <input className="rental-form-input" type="text" name="zip" placeholder="zip code" value={formData.zip} onChange={handleInputChange} required />
+
+  <label>
+    Dropoff Location <span className="required">*</span>
+  </label>
+  <input className="rental-form-input" type="text" name="dropoffLocation" placeholder="dropoff location" value={formData.dropoffLocation} onChange={handleInputChange} required />
 </div>
+
 
 
 
@@ -280,7 +314,6 @@ const handleSubmit = async () => {
           <li><span className="cost-label">Security Deposit (Refundable):</span><span className="cost-amount">$40.00</span></li>
           <li><span className="cost-label">Estimated Rental Cost:</span><span className="cost-amount">${estimatedCost.toFixed(2)}</span></li>
           <li><span className="cost-label">Estimated Shipping Cost:</span><span className="cost-amount">TBD</span>
-            <small className="cost-note">(based on delivery location and distance & will be charged upon delivery)</small>
           </li>
           <li className="total-cost"><span className="cost-label">Estimated Total :</span><span className="cost-amount">${ ((estimatedCost + 40) ).toFixed(2)}</span></li>
         </ul>
