@@ -12,7 +12,6 @@ import './App.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from '@vercel/speed-insights/next';
 
 function App() {
   useEffect(() => {
@@ -33,7 +32,6 @@ function App() {
             <SocialSection /> 
             {/* Analytics */}
             <Analytics />
-            <SpeedInsights />
           </div>
         } />
         <Route path="/rent" element={<RentalForm />} />
