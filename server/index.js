@@ -100,13 +100,13 @@ const Review = require('./models/Review'); // Include the Review model
 
 app.post('/api/reviews', async (req, res) => {
   try {
-    const { name, reviewText, rating } = req.body;
+    var { name, reviewText, rating } = req.body;
 
     // Check if the user has made a booking
     const bookingExists = await Booking.findOne({ name });
 
     if (!bookingExists) {
-      return res.status(403).json({ message: 'Only customers with bookings can submit reviews.' });
+      return res.status(403).json({ message: 'Only customers with bookings can submit reviews. Make sure your name matches your booking name.' });
     }
 
     const newReview = new Review({ name, reviewText, rating });
@@ -118,16 +118,29 @@ app.post('/api/reviews', async (req, res) => {
   }
 });
 
-// Endpoint to fetch top reviews
+// Endpoint to fetch top 10 reviews by rating and word count
 app.get('/api/reviews/top', async (req, res) => {
   try {
-    const topReviews = await Review.find().sort({ rating: -1, createdAt: -1 }).limit(5);
+    const topReviews = await Review.aggregate([
+      {
+        $addFields: {
+          wordCount: { $size: { $split: ["$reviewText", " "] } } // Calculate word count
+        }
+      },
+      {
+        $sort: { rating: -1, wordCount: -1, createdAt: -1 } // Sort by rating, then word count, then creation date
+      },
+      {
+        $limit: 6
+      }
+    ]);
     res.status(200).json(topReviews);
   } catch (error) {
     console.error("Error fetching top reviews:", error);
     res.status(500).json({ message: 'Error fetching reviews' });
   }
 });
+
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

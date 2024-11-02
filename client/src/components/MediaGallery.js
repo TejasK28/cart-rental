@@ -1,17 +1,32 @@
 // /client/src/components/MediaGallery.js
 import React from 'react';
 import './MediaGallery.css';
-import cartImage1 from '../images/cart1.jpg';
-import cartImage2 from '../images/cart2.jpg';
-import cartImage3 from '../images/cart3.jpg';
-import cartImage4 from '../images/cart4.jpg';
 import cartVideo1 from '../images/cartvid1.mp4';
+import c1 from '../images/cart1.jpeg';
+import c2 from '../images/cart2.jpeg';
+import c3 from '../images/cart3.jpeg';
+import c4 from '../images/cart4.jpeg';
+import c5 from '../images/cart5.jpeg';
+import c6 from '../images/cart6.jpeg';
+import c7 from '../images/cart7.jpeg';
+import c8 from '../images/cart8.jpeg';
+import c9 from '../images/cart9.jpeg';
+import c10 from '../images/cart10.jpeg';
+import c11 from '../images/cart11.jpeg';
+import c12 from '../images/cart12.jpeg';
 const mediaItems = [
-  { id: 1, type: 'image', src: cartImage1, alt: 'Product Image 1' },
-  { id: 2, type: 'image', src: cartImage2, alt: 'Product Image 2' },
+  { id: 1, type: 'image', src: c1, alt: 'Product Image 1' },
+  { id: 2, type: 'image', src: c2, alt: 'Product Image 2' },
   { id: 3, type: 'video', src: cartVideo1, alt: 'Product Video 1' },
-  { id: 4, type: 'image', src: cartImage3, alt: 'Product Image 3' },
-  { id: 5, type: 'video', src: cartVideo1, alt: 'Product Video 2' },
+  { id: 4, type: 'image', src: c3, alt: 'Product Image 3' },
+  { id: 5, type: 'image', src: c4, alt: 'Product Image 4' },
+  { id: 6, type: 'image', src: c5, alt: 'Product Image 5' },
+  { id: 7, type: 'image', src: c6, alt: 'Product Image 6' },
+  { id: 8, type: 'image', src: c7, alt: 'Product Image 7' },
+  { id: 9, type: 'image', src: c8, alt: 'Product Image 8' },
+  { id: 10, type: 'image', src: c9, alt: 'Product Image 9' },
+  { id: 11, type: 'image', src: c10, alt: 'Product Image 10' },
+  { id: 11, type: 'image', src: c11, alt: 'Product Image 11' }
 ];
 
 function MediaGallery() {

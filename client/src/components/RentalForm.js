@@ -136,7 +136,7 @@ function RentalForm() {
 
   const handleSignatureChange = (e) => setSignature(e.target.value);
 
-const TAX_RATE = 1.06625; // 6.625% tax rate
+const TAX_RATE = 1.08; //8% service fee
 
 const handleSubmit = async () => {
   if (!isContractSigned || !signature) {
@@ -156,13 +156,13 @@ const handleSubmit = async () => {
     return;
   }
 
-  if (isUnavailable(new Date(startDateTime), new Date(endDateTime))) {
-    setMessage("The selected time range overlaps with an existing booking.");
-    return;
-  }
+  // if (isUnavailable(new Date(startDateTime), new Date(endDateTime))) {
+  //   setMessage("The selected time range overlaps with an existing booking.");
+  //   return;
+  // }
 
   // Calculate the total cost after tax
-  const totalCost = (estimatedCost + 40) * TAX_RATE;
+  const totalCost = (estimatedCost + 40);
 
   try {
     await axios.post('http://localhost:5001/api/rent', {
@@ -221,7 +221,7 @@ const handleSubmit = async () => {
   return (
     <div className="rental-form">
       <Link to="/" className="back-arrow">← Back</Link>
-      <h2>Reserve the Chai Cart</h2>
+      <h2>Reserve the Dessert Cart</h2>
       {showPopup && (
         <div className="error-popup">
           <span>{message}</span>
@@ -229,45 +229,50 @@ const handleSubmit = async () => {
       )}
 
       <div className="date-time-selection">
-        <label>Start Date and Time:</label>
-        <DatePicker
-          selected={dates.startDateTime}
-          onChange={(date) => setDates({ ...dates, startDateTime: date })}
-          showTimeSelect
-          timeIntervals={30}
-          timeCaption="Time"
-          dateFormat="MMMM d, yyyy h:mm aa"
-          filterDate={filterUnavailableDates}
-          filterTime={filterUnavailableTimes}
-          minDate={new Date()}
-          placeholderText="Select Start Date and Time"
-        />
+  <label>Start Date and Time:</label>
+  <DatePicker
+    selected={dates.startDateTime}
+    onChange={(date) => setDates({ ...dates, startDateTime: date })}
+    showTimeSelect
+    timeIntervals={30}
+    timeCaption="Time"
+    dateFormat="MMMM d, yyyy h:mm aa"
+   // filterDate={filterUnavailableDates}
+    //filterTime={filterUnavailableTimes}
+    minDate={new Date()}
+    placeholderText="Select Start Date and Time"
+    className="rental-form-input" /* Add this line */
+  />
 
-        <label>End Date and Time:</label>
-        <DatePicker
-          selected={dates.endDateTime}
-          onChange={(date) => setDates({ ...dates, endDateTime: date })}
-          showTimeSelect
-          timeIntervals={30}
-          timeCaption="Time"
-          dateFormat="MMMM d, yyyy h:mm aa"
-          filterDate={filterUnavailableDates}
-          filterTime={filterUnavailableTimes}
-          minDate={dates.startDateTime}
-          placeholderText="Select End Date and Time"
-        />
-      </div>
+  <label>End Date and Time:</label>
+  <DatePicker
+    selected={dates.endDateTime}
+    onChange={(date) => setDates({ ...dates, endDateTime: date })}
+    showTimeSelect
+    timeIntervals={30}
+    timeCaption="Time"
+    dateFormat="MMMM d, yyyy h:mm aa"
+    //filterDate={filterUnavailableDates}
+    //filterTime={filterUnavailableTimes}
+    minDate={dates.startDateTime}
+    placeholderText="Select End Date and Time"
+    className="rental-form-input" /* Add this line */
+  />
+</div>
 
-      <div className="contact-info">
-        <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleInputChange} required />
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleInputChange} required />
-        <input type="text" name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleInputChange} required />
-        <input type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleInputChange} required />
-        <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleInputChange} required />
-        <input type="text" name="state" placeholder="State" value={formData.state} onChange={handleInputChange} required />
-        <input type="text" name="zip" placeholder="Zip Code" value={formData.zip} onChange={handleInputChange} required />
-        <input type="text" name="dropoffLocation" placeholder="Dropoff Location" value={formData.dropoffLocation} onChange={handleInputChange} required />
-      </div>
+
+      <div className="contact-info form-inputs-container">
+  <input className="rental-form-input" type="text" name="name" placeholder="Name" value={formData.name} onChange={handleInputChange} required />
+  <input className="rental-form-input" type="email" name="email" placeholder="Email" value={formData.email} onChange={handleInputChange} required />
+  <input className="rental-form-input" type="text" name="phoneNumber" placeholder="Phone Number" value={formData.phoneNumber} onChange={handleInputChange} required />
+  <input className="rental-form-input" type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleInputChange} required />
+  <input className="rental-form-input" type="text" name="city" placeholder="City" value={formData.city} onChange={handleInputChange} required />
+  <input className="rental-form-input" type="text" name="state" placeholder="State" value={formData.state} onChange={handleInputChange} required />
+  <input className="rental-form-input" type="text" name="zip" placeholder="Zip Code" value={formData.zip} onChange={handleInputChange} required />
+  <input className="rental-form-input" type="text" name="dropoffLocation" placeholder="Dropoff Location" value={formData.dropoffLocation} onChange={handleInputChange} required />
+</div>
+
+
 
       <div className="cost-summary">
         <h3>Cost Breakdown</h3>
@@ -277,9 +282,9 @@ const handleSubmit = async () => {
           <li><span className="cost-label">Estimated Shipping Cost:</span><span className="cost-amount">TBD</span>
             <small className="cost-note">(based on delivery location and distance & will be charged upon delivery)</small>
           </li>
-          <li className="total-cost"><span className="cost-label">Estimated Total (incl. tax):</span><span className="cost-amount">${ ((estimatedCost + 40) * TAX_RATE).toFixed(2)}</span></li>
+          <li className="total-cost"><span className="cost-label">Estimated Total :</span><span className="cost-amount">${ ((estimatedCost + 40) ).toFixed(2)}</span></li>
         </ul>
-        <p className="tax-note">*Includes estimated tax at 6.625%</p>
+         {/*<p className="tax-note">*Includes service fee at 8%</p> */} 
       </div>
 
       <button onClick={() => setIsModalOpen(!isModalOpen)}>Review & Accept Contract</button>
@@ -316,10 +321,10 @@ const handleSubmit = async () => {
       <p>The rental term shall commence on a specified date and time, and the decor piece must be returned on or before the end date. The Renter shall return the decor piece in the same condition as rented, with normal wear and tear excepted.</p>
 
       <h4>Rental Fee</h4>
-      <p>The Renter agrees to pay a rental fee of $100 per day, payable at delivery. Accepted payment methods include CASH, ZELLE, and VENMO.</p>
+      <p>The Renter agrees to pay a rental fee of <strong>$100</strong> per day, payable at delivery. Accepted payment methods include <strong>CASH, ZELLE, VENMO, APPLE PAY</strong>.</p>
 
       <h4>Security Deposit</h4>
-      <p>A security deposit of $40 is required, refundable within the same day of the rental's end, provided the decor piece is returned in the same condition.</p>
+      <p>A security deposit of <strong>$40</strong> is required, refundable within the same day of the rental's end, provided the decor piece is returned in the same condition.</p>
 
       <h4>Care and Maintenance</h4>
       <p>The Renter agrees to handle the decor piece carefully, use it only for its intended purpose, and avoid spilling liquids or exposing it to rain. Cover with a tarp if rain is expected.</p>
@@ -341,10 +346,6 @@ const handleSubmit = async () => {
   </div>
 )}
 
-
-
-
-    
       <button onClick={handleSubmit} >Confirm Booking</button>
 
          

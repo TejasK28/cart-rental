@@ -1,8 +1,16 @@
+/* /client/src/components/RentalForm.css */
+
 .rental-form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 30px;
+    background-color: #f3f6fb;
+    /* Light, professional background color */
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    margin: auto;
 }
 
 .back-arrow {
@@ -10,56 +18,72 @@
     top: 20px;
     left: 20px;
     font-size: 1.2em;
-    color: #555;
+    color: #007BFF;
+    /* Professional link color */
     text-decoration: none;
 }
 
-/* Updated to stack inputs vertically */
 .date-time-selection {
     display: flex;
     flex-direction: column;
-    /* Stack date-time inputs vertically */
     gap: 15px;
     width: 100%;
-    max-width: 400px;
-    margin-bottom: 15px;
+    max-width: 450px;
+    margin-bottom: 20px;
 }
 
 .date-time-group {
     display: flex;
     flex-direction: column;
     width: 100%;
-    /* Ensure full width in the parent container */
 }
 
 .date-time-group label {
     margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
 }
 
 .date-time-group select {
-    padding: 8px;
+    padding: 10px;
     width: 100%;
-    max-width: 100%;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
 }
 
-.rental-form input {
+.rental-form-input {
     margin: 10px 0;
-    padding: 8px;
+    padding: 12px;
     width: 100%;
-    max-width: 400px;
+    max-width: 450px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.3s ease;
+    font-size: 1em;
 }
 
+.rental-form-input:focus {
+    border-color: #007BFF;
+    outline: none;
+}
 .rental-form button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #ff6347;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #007BFF;
     color: white;
     border: none;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
 }
 
 .rental-form button:hover {
-    background-color: #ff4500;
+    background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
 .error-popup {
@@ -69,12 +93,12 @@
     transform: translate(-50%, -20%);
     background-color: #d9534f;
     color: white;
-    padding: 15px 20px;
-    border-radius: 8px;
-    font-size: 16px;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-size: 1rem;
     text-align: center;
     z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     animation: fadeInOut 3s ease-in-out;
 }
 
@@ -92,21 +116,22 @@
 }
 
 .cost-summary {
-    background-color: #f5f5f5;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     width: 100%;
-    max-width: 400px;
-    margin: 20px auto;
+    max-width: 450px;
     font-family: Arial, sans-serif;
+    margin-top: 25px;
 }
 
 .cost-summary h3 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+    font-size: 1.4em;
     color: #333;
+    margin-bottom: 15px;
     text-align: center;
+    font-weight: bold;
 }
 
 .cost-details {
@@ -118,17 +143,17 @@
 .cost-details li {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
-    font-size: 1em;
+    padding: 10px 0;
+    font-size: 1.05em;
     border-bottom: 1px solid #ddd;
 }
 
 .total-cost {
     font-weight: bold;
     color: #007BFF;
-    font-size: 1.1em;
+    font-size: 1.15em;
     border-top: 2px solid #ddd;
-    padding-top: 10px;
+    padding-top: 12px;
 }
 
 .cost-label {
@@ -138,18 +163,27 @@
 
 .cost-amount {
     font-weight: 600;
-    color: #222;
+    color: #333;
 }
 
 .cost-note {
-    font-size: 0.8em;
+    font-size: 0.85em;
     color: #777;
     display: block;
 }
 
 .tax-note {
-    font-size: 0.85em;
+    font-size: 0.9em;
     color: #666;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 12px;
+}
+
+.form-inputs-container,
+.date-time-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
 }

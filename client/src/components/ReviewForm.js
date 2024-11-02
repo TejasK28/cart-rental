@@ -19,7 +19,7 @@ function ReviewForm({ onReviewSubmitted }) {
     }
 
     try {
-      await axios.post('http://localhost:5001/api/reviews', { name, reviewText, rating });
+      await axios.post('http://localhost:5001/api/reviews', { name , reviewText, rating });
       onReviewSubmitted();
       setName('');
       setReviewText('');
@@ -53,7 +53,7 @@ function ReviewForm({ onReviewSubmitted }) {
           type="text"
           placeholder="Name (must match booking name)"
           value={name}
-          onChange={(e) => setName(e.target.value.toLowerCase())}
+          onChange={(e) => setName(e.target.value)}
           required
         />
         <textarea
