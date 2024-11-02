@@ -46,7 +46,7 @@ function RentalForm() {
 
   const fetchUnavailableSlots = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/unavailable-dates');
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URI}/api/unavailable-dates`);
       setUnavailableSlots(response.data.unavailableSlots || []);
     } catch (error) {
       console.error("Error fetching unavailable slots:", error);
@@ -165,7 +165,7 @@ const handleSubmit = async () => {
   const totalCost = (estimatedCost + 40);
 
   try {
-    await axios.post('http://localhost:5001/api/rent', {
+    await axios.post(`${process.env.REACT_APP_BACKEND_URI}/api/rent`, {
       ...formData,
       startDateTime,
       endDateTime,

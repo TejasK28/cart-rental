@@ -12,7 +12,7 @@ function RatingsSection() {
   // Fetch top reviews function
   const fetchTopReviews = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/reviews/top');
+const response = await axios.get(`${process.env.REACT_APP_BACKEND_URI}/api/reviews/top`);
       setTopReviews(response.data);
     } catch (error) {
       console.error("Error fetching top reviews:", error);

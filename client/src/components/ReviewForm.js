@@ -19,7 +19,7 @@ function ReviewForm({ onReviewSubmitted }) {
     }
 
     try {
-      await axios.post('http://localhost:5001/api/reviews', { name , reviewText, rating });
+      await axios.post(`${process.env.REACT_APP_BACKEND_URI}/api/reviews`, { name , reviewText, rating });
       onReviewSubmitted();
       setName('');
       setReviewText('');
