@@ -35,7 +35,7 @@ function MediaGallery() {
       <h2 data-aos="fade-down">Gallery</h2>
       <div className="media-grid">
         {mediaItems.map((item) => (
-          <div key={item.id} className="media-card" data-aos="zoom-in" data-aos-delay={item.id * 100}>
+          <div key={item.id} className="media-card" data-aos="zoom-in" data-aos-delay={item.id * 3}>
             {item.type === 'image' ? (
               <img src={item.src} alt={item.alt} className="media-image" />
             ) : (

@@ -45,7 +45,7 @@ function ContactSection() {
         <input 
           type="text" 
           name="name" 
-          placeholder="Your Name" 
+          placeholder="name" 
           value={formData.name}
           onChange={handleChange}
           required 
@@ -53,7 +53,7 @@ function ContactSection() {
         <input 
           type="email" 
           name="email" 
-          placeholder="Your Email" 
+          placeholder="email" 
           value={formData.email}
           onChange={handleChange}
           required 
@@ -61,14 +61,14 @@ function ContactSection() {
         <input 
           type="tel" 
           name="phone" 
-          placeholder="Your Phone Number" 
+          placeholder="number" 
           value={formData.phone}
           onChange={handleChange}
           required 
         />
         <textarea 
           name="message" 
-          placeholder="Your Message" 
+          placeholder="message" 
           value={formData.message}
           onChange={handleChange}
           required

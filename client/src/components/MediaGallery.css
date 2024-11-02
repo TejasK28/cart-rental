@@ -1,44 +1,75 @@
 /* /client/src/components/MediaGallery.css */
+
 .media-gallery {
-    padding: 20px;
+    padding: 30px;
+    margin: 20px auto;
+    background-color: #f3eafc;
+    border-radius: 20px;
+    /* Rounded edges for the entire section */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    /* Softer shadow */
+    max-width: 1300px;
+    /* Center and limit width for a balanced layout */
     text-align: center;
-    background-color: #f8f8f8;
 }
 
 .media-gallery h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 28px;
+    color: #5a3d9a;
+    /* Slightly darker shade for improved readability */
+    margin-bottom: 25px;
+    font-weight: bold;
 }
 
 .media-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
     justify-items: center;
 }
 
 .media-card {
     overflow: hidden;
     border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    /* Enhanced shadow for depth */
     background-color: #ffffff;
     width: 100%;
     max-width: 250px;
     height: 250px;
-    /* Ensure cards are a uniform height */
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .media-card:hover {
     transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Increased shadow on hover */
 }
 
 .media-image,
 .media-video {
     width: 100%;
     height: 100%;
-    /* Ensures full card height */
     border-radius: 15px;
     object-fit: cover;
-    /* Maintains aspect ratio without leaving white space */
+}
+
+/* Optional styling for hover effect inside the media card */
+.media-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 10px;
+    font-size: 16px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.media-card:hover .media-overlay {
+    opacity: 1;
 }

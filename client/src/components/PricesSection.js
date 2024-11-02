@@ -17,8 +17,8 @@ function PricesSection() {
       <p className="price-detail">⚡ Quick drop-off and pick-up available!</p>
       <p className="note">*Rental does not include decor*</p>
 
-      <h4 className="availability">Availability</h4>
-      <p className="price-detail">We have <strong>2 identical carts available</strong> for rent!</p>
+      <h3 className="prices-subtitle">Availability</h3>
+      <p className="price-detail"> 🛒 <strong>2</strong> identical carts available!</p>
     </div>
   );
 }

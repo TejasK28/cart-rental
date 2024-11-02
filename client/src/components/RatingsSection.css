@@ -1,26 +1,54 @@
 /* /client/src/components/RatingsSection.css */
 
 .ratings-section {
+    max-width: 1300px;
+    margin: 20px auto;
+    padding: 40px;
+    background-color: #f0f4f8;
+    /* Light background for readability */
     text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ratings-section h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: bold;
 }
 
 .rating-stars {
     display: flex;
-    /* Use flexbox to align items horizontally */
     flex-wrap: wrap;
-    /* Wrap to the next line if there's not enough space */
-    gap: 15px;
-    /* Add spacing between reviews */
+    gap: 20px;
     justify-content: center;
-    /* Center align the reviews */
 }
 
+/* Individual review cards with consistent styling */
 .review {
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    padding: 10px;
-    width: 200px;
-    /* Set a fixed width to control layout */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    /* Clean white for individual reviews */
+    border-radius: 10px;
+    padding: 20px;
+    width: 250px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: left;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.review:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.review p {
+    margin: 0 0 10px;
+    color: #555;
+    font-size: 1rem;
+}
+
+.review strong {
+    color: #007bff;
+    font-weight: 600;
 }

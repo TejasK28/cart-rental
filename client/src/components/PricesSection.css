@@ -4,44 +4,39 @@
     text-align: left;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    max-width: 1300px;
     margin: 20px auto;
 }
 
 .prices-title {
     font-size: 1.8em;
-    color: #333;
+    color: #000000;
     margin-bottom: 15px;
 }
 
 .price-detail {
     font-size: 1.1em;
-    color: #555;
+    color: #000000;
     margin: 10px 0;
 }
 
 .price-highlight {
     font-size: 1.15em;
-    color: #007BFF;
+    color: #000000;
     font-weight: bold;
     margin-top: 15px;
 }
 
 .prices-subtitle {
     font-size: 1.3em;
-    color: #333;
+    color: #000000;
     margin: 20px 0 10px;
 }
 
 .note {
     font-size: 0.9em;
-    color: #888;
+    color: #000000;
     margin-top: 10px;
     font-style: italic;
 }
 
-.availability {
-    font-size: 1.2em;
-    color: #007BFF;
-    margin-top: 20px;
-}
