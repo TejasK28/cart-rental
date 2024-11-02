@@ -32,10 +32,10 @@ function HeroSection() {
 
   return (
     <div className="hero-section">
-      {/* <div
+      <div
         className={`hero-image ${fade ? 'fade-in' : 'fade-out'}`}
         style={{ backgroundImage: `url(${images[currentImageIndex]})` }}
-      ></div> */}
+      ></div>
       <div className="hero-overlay"></div>
       <div className="hero-content">
         <h1 className="hero-title">Dessert Cart Rental</h1>
