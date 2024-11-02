@@ -11,6 +11,7 @@ import MediaGallery from './components/MediaGallery.js';
 import './App.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   useEffect(() => {
@@ -27,8 +28,9 @@ function App() {
             <MediaGallery />
             <PricesSection /> 
             <RatingsSection />
-            <ContactSection /> {/* New Contact Section */}
-            <SocialSection /> {/* New Social Section */}
+            <ContactSection />
+            <SocialSection /> 
+            <Analytics />
           </div>
         } />
         <Route path="/rent" element={<RentalForm />} />
