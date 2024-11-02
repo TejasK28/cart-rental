@@ -41,7 +41,7 @@ function HeroSection() {
       <div className="hero-overlay"></div>
       <div className="hero-content">
         <h1 className="hero-title">Dessert Cart Rental</h1>
-        <p className="hero-description">Bring the authentic Dessert experience to any event with our unique Dessert Cart!</p>
+        <p className="hero-description">Bring the authentic dessert experience to any event with our unique Dessert Cart!</p>
         <Link to="/rent" className="cta-button">Rent Now</Link>
       </div>
     </div>
