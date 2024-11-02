@@ -13,6 +13,7 @@ import c9 from '../images/cart9.jpeg';
 import c10 from '../images/cart10.jpeg';
 import c11 from '../images/cart11.jpeg';
 import c12 from '../images/cart12.jpeg';
+import logo from '../images/logo.png'; // import your logo image
 
 function HeroSection() {
   const images = [c5, c2, c3, c4, c1, c6, c7, c8, c9, c10, c11, c12];
@@ -32,6 +33,7 @@ function HeroSection() {
 
   return (
     <div className="hero-section">
+      <img src={logo} alt="Logo" className="hero-logo" /> {/* Add logo image */}
       <div
         className={`hero-image ${fade ? 'fade-in' : 'fade-out'}`}
         style={{ backgroundImage: `url(${images[currentImageIndex]})` }}
