@@ -15,7 +15,7 @@ import c11 from '../images/cart11.jpeg';
 import c12 from '../images/cart12.jpeg';
 
 function HeroSection() {
-  const images = [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12];
+  const images = [c5, c2, c3, c4, c1, c6, c7, c8, c9, c10, c11, c12];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fade, setFade] = useState(true);
 
