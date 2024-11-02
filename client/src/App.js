@@ -26,9 +26,9 @@ function App() {
             <HeroSection />
             <FeaturesSection />
             <MediaGallery />
-            <PricesSection /> 
-            <RatingsSection />
+            <PricesSection />            
             <ContactSection />
+            <RatingsSection />
             <SocialSection /> 
             <Analytics />
           </div>
