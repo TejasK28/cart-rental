@@ -1,6 +1,6 @@
 # Cart Rental 🛒
 
-A potential website for cart rentals.
+A website for cart rentals.
 
 ## Description
 
