@@ -1,4 +1,3 @@
-```markdown
 # Cart Rental 🛒
 
 A potential website for cart rentals.
